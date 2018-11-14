@@ -1,67 +1,69 @@
-import { pluralize } from 'inflection';
-import GraphQLJSON from 'graphql-type-json';
+import { pluralize } from "inflection";
+import GraphQLJSON from "graphql-type-json";
 
-import all from './Query/all';
-import meta from './Query/meta';
-import single from './Query/single';
-import create from './Mutation/create';
-import update from './Mutation/update';
-import remove from './Mutation/remove';
-import entityResolver from './Entity';
-import { getTypeFromKey } from '../nameConverter';
-import DateType from '../introspection/DateType';
-import hasType from '../introspection/hasType';
-import relationalData from './Query/relationalData';
+import all from "./Query/all";
+import meta from "./Query/meta";
+import single from "./Query/single";
+import create from "./Mutation/create";
+import update from "./Mutation/update";
+import remove from "./Mutation/remove";
+import entityResolver from "./Entity";
+import { getTypeFromKey } from "../nameConverter";
+import DateType from "../introspection/DateType";
+import hasType from "../introspection/hasType";
+import relationalData from "./Query/relationalData";
 
+//Check documentation otherwise document it as well
 const getQueryResolvers = (entityName, data) => ({
-    [`all${pluralize(entityName)}`]: all(data),
-    [`_all${pluralize(entityName)}Meta`]: meta(data),
-    //   [`getRelational${pluralize(entityName)}Data`]: all(data),
-    [entityName]: single(data),
+  [`all${pluralize(entityName)}`]: all(data),
+  [`_all${pluralize(entityName)}Meta`]: meta(data),
+  //   [`getRelational${pluralize(entityName)}Data`]: all(data),
+  [entityName]: single(data)
 });
 
 const getMutationResolvers = (entityName, data) => ({
-    [`create${entityName}`]: create(data),
-    [`update${entityName}`]: update(data),
-    [`remove${entityName}`]: remove(data),
+  [`create${entityName}`]: create(data),
+  [`update${entityName}`]: update(data),
+  [`remove${entityName}`]: remove(data)
 });
 
+//This is new, document it for Rik
 const getRelationQueryResolvers = (entityName, data) => ({
-    [`getRelational${entityName}Data`]: relationalData(entityName, data),
+  [`getRelational${entityName}Data`]: relationalData(entityName, data)
 });
 
 export default data => {
-    return Object.assign(
-        {},
-        {
-            Query: Object.keys(data).reduce(
-                (resolvers, key) =>
-                    Object.assign(
-                        {},
-                        resolvers,
-                        getQueryResolvers(getTypeFromKey(key), data[key]),
-                        getRelationQueryResolvers(getTypeFromKey(key), data)
-                    ),
-                {}
-            ),
-            Mutation: Object.keys(data).reduce(
-                (resolvers, key) =>
-                    Object.assign(
-                        {},
-                        resolvers,
-                        getMutationResolvers(getTypeFromKey(key), data[key])
-                    ),
-                {}
-            ),
-        },
-        Object.keys(data).reduce(
-            (resolvers, key) =>
-                Object.assign({}, resolvers, {
-                    [getTypeFromKey(key)]: entityResolver(key, data),
-                }),
-            {}
-        ),
-        hasType('Date', data) ? { Date: DateType } : {}, // required because makeExecutableSchema strips resolvers from typeDefs
-        hasType('JSON', data) ? { JSON: GraphQLJSON } : {} // required because makeExecutableSchema strips resolvers from typeDefs
-    );
+  return Object.assign(
+    {},
+    {
+      Query: Object.keys(data).reduce(
+        (resolvers, key) =>
+          Object.assign(
+            {},
+            resolvers,
+            getQueryResolvers(getTypeFromKey(key), data[key]),
+            getRelationQueryResolvers(getTypeFromKey(key), data)
+          ),
+        {}
+      ),
+      Mutation: Object.keys(data).reduce(
+        (resolvers, key) =>
+          Object.assign(
+            {},
+            resolvers,
+            getMutationResolvers(getTypeFromKey(key), data[key])
+          ),
+        {}
+      )
+    },
+    Object.keys(data).reduce(
+      (resolvers, key) =>
+        Object.assign({}, resolvers, {
+          [getTypeFromKey(key)]: entityResolver(key, data)
+        }),
+      {}
+    ),
+    hasType("Date", data) ? { Date: DateType } : {}, // required because makeExecutableSchema strips resolvers from typeDefs
+    hasType("JSON", data) ? { JSON: GraphQLJSON } : {} // required because makeExecutableSchema strips resolvers from typeDefs
+  );
 };

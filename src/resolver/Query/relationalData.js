@@ -1,7 +1,7 @@
-import getRelationalFieldForEntity from '../../introspection/getRelationFieldForEntity';
+import getRelationalFieldForEntity from "../../introspection/getRelationFieldForEntity";
 
-export default (entityName, entityData = []) => {
-    const items = getRelationalFieldForEntity(entityName, entityData);
+export default (entityName, entityData = []) => (_, {}) => {
+  const items = getRelationalFieldForEntity(entityName, entityData);
 
-    return items;
+  return items;
 };

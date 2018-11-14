@@ -9,7 +9,6 @@
   "license": "MIT",
   "scripts": {
     "format": "make format",
-    "precommit": "lint-staged",
     "test": "jest",
     "watch-test": "make watch-test",
     "server": "make run",
