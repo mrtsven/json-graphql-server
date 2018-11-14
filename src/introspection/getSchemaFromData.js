@@ -14,8 +14,9 @@ import { pluralize, camelize } from 'inflection';
 
 import getTypesFromData from './getTypesFromData';
 import getFilterTypesFromData from './getFilterTypesFromData';
+import getRelationalFieldForEntity from './getRelationFieldForEntity';
 import { isRelationshipField } from '../relationships';
-import { getRelatedType } from '../nameConverter';
+import { getRelatedType, getTypeFromKey } from '../nameConverter';
 
 /**
  * Get a GraphQL schema from data
@@ -92,6 +93,20 @@ export default data => {
         },
     });
 
+    const getRelationalDataType = entityName => {
+        const relationalData = getRelationalFieldForEntity(entityName, data);
+
+        return new GraphQLObjectType({
+            name: `relational${entityName}Data`,
+            fields: Object.keys(relationalData).reduce(function(res, item) {
+                res[item] = {
+                    type: new GraphQLList(typesByName[getTypeFromKey(item)]),
+                };
+                return res;
+            }, {}),
+        });
+    };
+
     const queryType = new GraphQLObjectType({
         name: 'Query',
         fields: types.reduce((fields, type) => {
@@ -111,6 +126,12 @@ export default data => {
                     filter: { type: filterTypesByName[type.name] },
                 },
             };
+
+            fields[`getRelational${camelize(type.name)}Data`] = {
+                type: getRelationalDataType(type.name),
+                args: {},
+            };
+
             fields[`_all${camelize(pluralize(type.name))}Meta`] = {
                 type: listMetadataType,
                 args: {
@@ -119,6 +140,7 @@ export default data => {
                     filter: { type: filterTypesByName[type.name] },
                 },
             };
+
             return fields;
         }, {}),
     });

@@ -57,3 +57,9 @@ export const getReverseRelatedField = key => `${singularize(key)}_id`;
  */
 export const getRelatedType = fieldName =>
     getTypeFromKey(fieldName.substr(0, fieldName.length - 3));
+
+export const getReversedCollectionName = typeName =>
+    pluralize(typeName).toLowerCase();
+
+export const isRelationalField = fieldName =>
+    fieldName.substr(fieldName.length - 3, 3) === '_id';

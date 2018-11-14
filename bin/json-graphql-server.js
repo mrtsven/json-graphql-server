@@ -10,8 +10,6 @@ var data = require(path.join(process.cwd(), dataFilePath));
 var PORT = process.env.NODE_PORT || 3000;
 var app = express();
 
-console.log("test");
-
 process.argv.forEach((arg, index) => {
   // allow a custom port via CLI
   if (arg === "--p" && process.argv.length > index + 1) {

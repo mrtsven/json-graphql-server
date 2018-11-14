@@ -11,10 +11,12 @@ import entityResolver from './Entity';
 import { getTypeFromKey } from '../nameConverter';
 import DateType from '../introspection/DateType';
 import hasType from '../introspection/hasType';
+import relationalData from './Query/relationalData';
 
 const getQueryResolvers = (entityName, data) => ({
     [`all${pluralize(entityName)}`]: all(data),
     [`_all${pluralize(entityName)}Meta`]: meta(data),
+    //   [`getRelational${pluralize(entityName)}Data`]: all(data),
     [entityName]: single(data),
 });
 
@@ -22,6 +24,10 @@ const getMutationResolvers = (entityName, data) => ({
     [`create${entityName}`]: create(data),
     [`update${entityName}`]: update(data),
     [`remove${entityName}`]: remove(data),
+});
+
+const getRelationQueryResolvers = (entityName, data) => ({
+    [`getRelational${entityName}Data`]: relationalData(entityName, data),
 });
 
 export default data => {
@@ -33,7 +39,8 @@ export default data => {
                     Object.assign(
                         {},
                         resolvers,
-                        getQueryResolvers(getTypeFromKey(key), data[key])
+                        getQueryResolvers(getTypeFromKey(key), data[key]),
+                        getRelationQueryResolvers(getTypeFromKey(key), data)
                     ),
                 {}
             ),
