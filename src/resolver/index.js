@@ -13,11 +13,9 @@ import DateType from "../introspection/DateType";
 import hasType from "../introspection/hasType";
 import relationalData from "./Query/relationalData";
 
-//Check documentation otherwise document it as well
 const getQueryResolvers = (entityName, data) => ({
   [`all${pluralize(entityName)}`]: all(data),
   [`_all${pluralize(entityName)}Meta`]: meta(data),
-  //   [`getRelational${pluralize(entityName)}Data`]: all(data),
   [entityName]: single(data)
 });
 
@@ -27,7 +25,7 @@ const getMutationResolvers = (entityName, data) => ({
   [`remove${entityName}`]: remove(data)
 });
 
-//This is new, document it for Rik
+//Relational Query Resolver
 const getRelationQueryResolvers = (entityName, data) => ({
   [`getRelational${entityName}Data`]: relationalData(entityName, data)
 });

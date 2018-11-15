@@ -1,4 +1,4 @@
-import { camelize, pluralize, singularize } from 'inflection';
+import { camelize, pluralize, singularize } from "inflection";
 
 /**
  * A bit of vocabulary
@@ -41,7 +41,7 @@ export const getTypeFromKey = key => camelize(singularize(key));
  * @return {String} 'users'
  */
 export const getRelatedKey = fieldName =>
-    pluralize(fieldName.substr(0, fieldName.length - 3));
+  pluralize(fieldName.substr(0, fieldName.length - 3));
 
 /**
  * 
@@ -56,10 +56,19 @@ export const getReverseRelatedField = key => `${singularize(key)}_id`;
  * @return {String} 'User'
  */
 export const getRelatedType = fieldName =>
-    getTypeFromKey(fieldName.substr(0, fieldName.length - 3));
-
+  getTypeFromKey(fieldName.substr(0, fieldName.length - 3));
+/**
+ * 
+ * @param {String} typeName 'User'
+ * @return {String} 'users'
+ */
 export const getReversedCollectionName = typeName =>
-    pluralize(typeName).toLowerCase();
+  pluralize(typeName).toLowerCase();
+
+/**
+     * 
+     *@param {String} typeName last three characters equal "_id"
+     */
 
 export const isRelationalField = fieldName =>
-    fieldName.substr(fieldName.length - 3, 3) === '_id';
+  fieldName.substr(fieldName.length - 3, 3) === "_id";
